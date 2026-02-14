@@ -8,12 +8,12 @@
         public DateTime MemberSince { get; set; }
         public List<Loan> BorrowedBooks { get; private set; } 
 
-        public Member(string memberId, string name, string email, DateTime memberSince)
+        public Member(string memberId, string name, string email)
         {
             MemberId = memberId;
             Name = name;
             Email = email;
-            MemberSince = memberSince;
+            MemberSince = DateTime.Now;
             BorrowedBooks = new List<Loan>();
         }
      
