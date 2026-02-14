@@ -11,7 +11,7 @@ namespace LibrarySystem.Services
         private BookCatalog bookCatalog;
         private MemberRegistry memberRegistry;
         private LoanManager loanManager;
-        public Library() 
+        public Library()
         {
             bookCatalog = new BookCatalog();
             memberRegistry = new MemberRegistry();
@@ -30,7 +30,7 @@ namespace LibrarySystem.Services
             return bookCatalog.SortByYear();
 
         }
-        public List<Book>SortByTitle()
+        public List<Book> SortByTitle()
         {
             return bookCatalog.SortByTitle();
         }
@@ -38,7 +38,7 @@ namespace LibrarySystem.Services
         {
             return bookCatalog.SortByAuthor();
         }
-        public int getTotalBooks()
+        public int GetTotalBooks()
         {
             return bookCatalog.GetTotalBooks();
         }
@@ -46,16 +46,31 @@ namespace LibrarySystem.Services
         {
             return bookCatalog.GetBorrowedBooksCount();
         }
-        public Member getMostActiveMember()
+        public Member GetMostActiveBorrower()
         {
             var members = memberRegistry.GetAllMembers();
-            return members.OrderByDescending(m => m.BorrowedBooks.Count).FirstOrDefault();
+            return members.OrderByDescending(member => member.BorrowedBooks.Count).FirstOrDefault();
         }
+        public Loan BorrowBook(string isbn, string memberId)
+        {
+            var book = bookCatalog.GetAllBooks().FirstOrDefault(b => b.ISBN == isbn);
+            var member = memberRegistry.FindMember(memberId);
 
 
-
-
-
-
+            if (book != null && member != null && book.IsAvailable)
+            {
+                return loanManager.BorrowBook(book, member);
+            }
+            return null;
+        }
+        public bool ReturnBook(Loan loan)
+        {
+            return loanManager.ReturnBook(loan);
+        }
+        public List<Loan> GetAllLoans()
+        {
+            return loanManager.GetAllLoans();
+        }
     }
+
 }
