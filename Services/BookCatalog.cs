@@ -51,7 +51,7 @@ namespace LibrarySystem.Services
         }
         public int GetBorrowedBooksCount()
         {
-            return books.Count(book => book.IsAvailable);
+            return books.Count(book => !book.IsAvailable);
         }
 
     }

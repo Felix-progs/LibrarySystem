@@ -1,5 +1,6 @@
 ﻿using System;
 using LibrarySystem.Services;
+using System.Linq;
 
 
 
@@ -52,6 +53,15 @@ namespace LibrarySystem
                     case "4":
                         Console.WriteLine($"Total books: {library.GetTotalBooks()}");
                         Console.WriteLine($"Borrowed: {library.GetBorrowedBooksCount()}");
+
+                        var activeBorrower = library.GetMostActiveBorrower();
+                        if (activeBorrower != null)
+                        
+                            Console.WriteLine($"Most Active Borrower: {activeBorrower.Name}");
+                        else
+                            Console.WriteLine("No active borrowers found.");
+
+
                         break;
 
                     case "5":
