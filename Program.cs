@@ -15,7 +15,9 @@ namespace LibrarySystem
 
             while (running)
             {
+                Console.WriteLine("===============================");
                 Console.WriteLine("Welcome to the Library System!");
+                Console.WriteLine("===============================");
                 Console.WriteLine("1. View All Books");
                 Console.WriteLine("2. Search Books");
                 Console.WriteLine("3. Sort Books by Title");
