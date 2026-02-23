@@ -2,10 +2,10 @@
 {
     public class Member
     {
-        public string MemberId { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public DateTime MemberSince { get; set; }
+        public string MemberId { get; }
+        public string Name { get; }
+        public string Email { get; }
+        public DateTime MemberSince { get;}
         public List<Loan> BorrowedBooks { get; private set; } 
 
         public Member(string memberId, string name, string email)
