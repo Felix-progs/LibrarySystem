@@ -7,16 +7,19 @@ namespace LibrarySystem.Models
 {
     public class Book: ISearchable
     {
-        public string Title { get;}
-        public string ISBN { get;}
-        public string Author { get;}
-        public int PublishedYear { get;}
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string ISBN { get; set; }  = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public int PublishedYear { get; set; }
         public bool IsAvailable { get; set; }
 
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+        public Book() { }
         public Book (string title, string isbn, string author, int publishedYear)
         {
-            ISBN = isbn;
             Title = title;
+            ISBN = isbn;
             Author = author;
             PublishedYear = publishedYear;
             IsAvailable = true;
