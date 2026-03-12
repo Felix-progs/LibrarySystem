@@ -49,7 +49,7 @@ namespace LibrarySystem.Services
         public Member GetMostActiveBorrower()
         {
             var members = memberRegistry.GetAllMembers();
-            return members.OrderByDescending(member => member.BorrowedBooks.Count).FirstOrDefault();
+            return members.OrderByDescending(member => member.Loans.Count).FirstOrDefault();
         }
         public Loan BorrowBook(string isbn, string memberId)
         {

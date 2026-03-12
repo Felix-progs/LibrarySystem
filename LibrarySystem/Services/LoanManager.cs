@@ -24,7 +24,7 @@ namespace LibrarySystem.Services
             loans.Add(loan);
 
             book.IsAvailable = false;
-            member.BorrowedBooks.Add(loan);
+            member.Loans.Add(loan);
 
             return loan;
 

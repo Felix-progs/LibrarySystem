@@ -2,11 +2,15 @@
 {
     public class Member
     {
-        public string MemberId { get; }
-        public string Name { get; }
-        public string Email { get; }
-        public DateTime MemberSince { get;}
-        public List<Loan> BorrowedBooks { get; private set; } 
+        public int Id { get; set; }
+        public string MemberId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public DateTime MemberSince { get; set; }
+        
+        public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
+        public Member() { }
 
         public Member(string memberId, string name, string email)
         {
@@ -14,7 +18,7 @@
             Name = name;
             Email = email;
             MemberSince = DateTime.Now;
-            BorrowedBooks = new List<Loan>();
+            
         }
      
     public string MemberInformation()
