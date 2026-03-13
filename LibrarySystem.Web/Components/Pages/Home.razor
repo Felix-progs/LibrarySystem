@@ -1,7 +1,59 @@
 ﻿@page "/"
+@inject IBookRepository BookRepository
+@inject ILoanRepository LoanRepository
+@inject IMemberRepository MemberRepository
+@using LibrarySystem.Interfaces
 
-<PageTitle>Home</PageTitle>
+<div class="text-center mb-4">
+    <i class="bi bi-book" style="font-size: 5rem; color: #0d6efd;"></i>
+    <h1>Library System</h1>
+    
+</div>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Books</h5>
+                <p class="card-text display-4">@totalBooks</p>
+                <a href="/books" class="btn btn-primary">View Books</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Active Loans</h5>
+                <p class="card-text display-4">@activeLoans</p>
+                <a href="/loans" class="btn btn-primary">View Loans</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Members</h5>
+                <p class="card-text display-4">@totalMembers</p>
+                <a href="/members" class="btn btn-primary">View Members</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int totalBooks;
+    private int activeLoans;
+    private int totalMembers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var books = await BookRepository.GetAllAsync();
+        var loans = await LoanRepository.GetActiveLoansAsync();
+        var members = await MemberRepository.GetAllAsync();
+
+        totalBooks = books.Count();
+        activeLoans = loans.Count();
+        totalMembers = members.Count();
+    }
+}

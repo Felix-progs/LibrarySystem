@@ -1,0 +1,129 @@
+﻿@page "/loans"
+@rendermode InteractiveServer
+@inject ILoanRepository LoanRepository
+@inject IBookRepository BookRepository
+@inject IMemberRepository MemberRepository
+@using LibrarySystem.Interfaces
+@using LibrarySystem.Models
+
+<h3>Loans</h3>
+
+<button class="btn btn-primary mb-3" @onclick="() => showForm = !showForm">New Loan</button>
+
+@if (showForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <EditForm Model="newLoan" OnValidSubmit="AddLoan">
+                <div class="mb-2">
+                    <label>Book</label>
+                    <select class="form-control" @bind="selectedBookId">
+                        <option value="0">Select a book</option>
+                        @foreach (var book in availableBooks ?? Enumerable.Empty<Book>())
+                        {
+                            <option value="@book.Id">@book.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label>Member</label>
+                    <select class="form-control" @bind="selectedMemberId">
+                        <option value="0">Select a member</option>
+                        @foreach (var member in members ?? Enumerable.Empty<Member>())
+                        {
+                            <option value="@member.Id">@member.Name</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Member</th>
+            <th>Loan Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in loans ?? Enumerable.Empty<Loan>())
+        {
+            <tr>
+                <td>@loan.Book?.Title</td>
+                <td>@loan.Member?.Name</td>
+                <td>@loan.LoanDate.ToShortDateString()</td>
+                <td>@loan.DueDate.ToShortDateString()</td>
+                <td>@(loan.IsReturned ? "Returned" : loan.IsOverdue ? "Overdue" : "Active")</td>
+                <td>
+                    @if (!loan.IsReturned)
+                    {
+                        <button class="btn btn-primary btn-sm" @onclick="() => ReturnLoan(loan.Id)">Return</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Loan>? loans;
+    private IEnumerable<Book>? availableBooks;
+    private IEnumerable<Member>? members;
+    private bool showForm = false;
+    private Loan newLoan = new Loan();
+    private int selectedBookId = 0;
+    private int selectedMemberId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        loans = await LoanRepository.GetAllAsync();
+        availableBooks = (await BookRepository.GetAllAsync()).Where(b => b.IsAvailable);
+        members = await MemberRepository.GetAllAsync();
+    }
+
+    private async Task AddLoan()
+    {
+        if (selectedBookId == 0 || selectedMemberId == 0) return;
+
+        var book = await BookRepository.GetByIdAsync(selectedBookId);
+        var member = await MemberRepository.GetByIdAsync(selectedMemberId);
+
+        if (book == null || member == null) return;
+
+        var loan = new Loan(book, member, DateTime.Now, DateTime.Now.AddDays(14));
+        book.IsAvailable = false;
+
+        await BookRepository.UpdateAsync(book);
+        await LoanRepository.AddAsync(loan);
+
+        loans = await LoanRepository.GetAllAsync();
+        availableBooks = (await BookRepository.GetAllAsync()).Where(b => b.IsAvailable);
+        selectedBookId = 0;
+        selectedMemberId = 0;
+        showForm = false;
+    }
+
+    private async Task ReturnLoan(int id)
+    {
+        var loan = await LoanRepository.GetByIdAsync(id);
+        if (loan == null) return;
+
+        loan.ReturnDate = DateTime.Now;
+        if (loan.Book != null)
+        {
+            loan.Book.IsAvailable = true;
+            await BookRepository.UpdateAsync(loan.Book);
+        }
+        await LoanRepository.UpdateAsync(loan);
+        loans = await LoanRepository.GetAllAsync();
+        availableBooks = (await BookRepository.GetAllAsync()).Where(b => b.IsAvailable);
+    }
+}

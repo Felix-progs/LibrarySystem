@@ -1,0 +1,73 @@
+﻿@page "/members"
+@rendermode InteractiveServer
+@inject IMemberRepository MemberRepository
+@using LibrarySystem.Interfaces
+@using LibrarySystem.Models
+
+<h3>Members</h3>
+
+<button class="btn btn-primary mb-3" @onclick="() => showForm = !showForm">Add Member</button>
+
+@if (showForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <EditForm Model="newMember" OnValidSubmit="AddMember">
+                <DataAnnotationsValidator />
+                <div class="mb-2">
+                    <InputText class="form-control" placeholder="Name" @bind-Value="newMember.Name" />
+                </div>
+                <div class="mb-2">
+                    <InputText class="form-control" placeholder="Email" @bind-Value="newMember.Email" />
+                </div>
+                <div class="mb-2">
+                    <InputText class="form-control" placeholder="Member ID" @bind-Value="newMember.MemberId" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Member ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Since</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var member in members ?? Enumerable.Empty<Member>())
+        {
+            <tr>
+                <td>@member.MemberId</td>
+                <td>@member.Name</td>
+                <td>@member.Email</td>
+                <td>@member.MemberSince.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Member>? members;
+    private bool showForm = false;
+    private Member newMember = new Member();
+
+    protected override async Task OnInitializedAsync()
+    {
+        members = await MemberRepository.GetAllAsync();
+    }
+
+    private async Task AddMember()
+    {
+        newMember.MemberSince = DateTime.Now;
+        await MemberRepository.AddAsync(newMember);
+        members = await MemberRepository.GetAllAsync();
+        newMember = new Member();
+        showForm = false;
+    }
+}

@@ -1,0 +1,157 @@
+﻿@page "/books"
+@rendermode InteractiveServer
+@inject IBookRepository BookRepository
+@using LibrarySystem.Interfaces
+@using LibrarySystem.Models
+
+<h3>Books</h3>
+
+<button class="btn btn-primary mb-3" @onclick="() => showForm = !showForm">Add Book</button>
+
+@if (showForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Add New Book</h5>
+            <EditForm Model="newBook" OnValidSubmit="AddBook">
+                
+                <DataAnnotationsValidator />
+                <div class="mb-2">
+                    <label>Title</label>
+                    <InputText class="form-control" @bind-Value="newBook.Title" />
+                    <ValidationMessage For="() => newBook.Title" />
+                </div>
+                <div class="mb-2">
+                    <label>Author</label>
+                    <InputText class="form-control" @bind-Value="newBook.Author" />
+                    <ValidationMessage For="() => newBook.Author" />
+                </div>
+                <div class="mb-2">
+                    <label>ISBN</label>
+                    <InputText class="form-control" @bind-Value="newBook.ISBN" />
+                    <ValidationMessage For="() => newBook.ISBN" />
+                </div>
+                <div class="mb-2">
+                    <label>Year</label>
+                    <InputNumber class="form-control" @bind-Value="newBook.PublishedYear" />
+                    <ValidationMessage For="() => newBook.PublishedYear" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="() => showForm = false">Cancel</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (updateBook != null)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Edit Book</h5>
+            <EditForm Model="updateBook" OnValidSubmit="SaveUpdate">
+                
+                <DataAnnotationsValidator />
+                <div class="mb-2">
+                    <label>Title</label>
+                    <InputText class="form-control" @bind-Value="updateBook.Title" />
+                    <ValidationMessage For="() => updateBook.Title" />
+                </div>
+                <div class="mb-2">
+                    <label>Author</label>
+                    <InputText class="form-control" @bind-Value="updateBook.Author" />
+                    <ValidationMessage For="() => updateBook.Author" />
+                </div>
+                <div class="mb-2">
+                    <label>ISBN</label>
+                    <InputText class="form-control" @bind-Value="updateBook.ISBN" />
+                    <ValidationMessage For="() => updateBook.ISBN" />
+                </div>
+                <div class="mb-2">
+                    <label>Year</label>
+                    <InputNumber class="form-control" @bind-Value="updateBook.PublishedYear" />
+                    <ValidationMessage For="() => updateBook.PublishedYear" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="() => updateBook = null">Cancel</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Year</th>
+            <th>Available</th>
+            <th>Option</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in books ?? Enumerable.Empty<Book>())
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.ISBN</td>
+                <td>@book.PublishedYear</td>
+                <td>@(book.IsAvailable ? "Available" : "Unavailable")</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => UpdateBook(book)">Edit</button>
+                    <button class="btn btn-secondary" @onclick="() => DeleteBook(book.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private IEnumerable<Book>? books;
+    private bool showForm = false;
+    private Book newBook = new Book() { IsAvailable = true };
+    private Book? updateBook = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await BookRepository.GetAllAsync();
+    }
+
+    private async Task AddBook()
+    {
+        await BookRepository.AddAsync(newBook);
+        books = await BookRepository.GetAllAsync();
+        newBook = new Book() { IsAvailable = true };
+        showForm = false;
+    }
+
+    private void UpdateBook(Book book)
+    {
+        updateBook = new Book()
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+            ISBN = book.ISBN,
+            PublishedYear = book.PublishedYear,
+            IsAvailable = book.IsAvailable
+        };
+    }
+
+    private async Task SaveUpdate()
+    {
+        if (updateBook != null)
+        {
+            await BookRepository.UpdateAsync(updateBook);
+            books = await BookRepository.GetAllAsync();
+            updateBook = null;
+        }
+    }
+
+    private async Task DeleteBook(int id)
+    {
+        await BookRepository.DeleteAsync(id);
+        books = await BookRepository.GetAllAsync();
+    }
+}
