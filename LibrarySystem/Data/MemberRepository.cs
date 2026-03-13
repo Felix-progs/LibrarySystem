@@ -23,34 +23,43 @@ namespace LibrarySystem.Data
 
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var member = await GetByIdAsync(id);
+            if (member != null)
+            {
+                _context.Members.Remove(member);
+                await _context.SaveChangesAsync();
+            }
+            
         }
 
-        public Task<IEnumerable<Member>> GetAllAsync()
+        public async Task<IEnumerable<Member>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Members.ToListAsync();
         }
 
-        public Task<Member?> GetByIdAsync(int id)
+        public async Task<Member?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Members.FindAsync(id);
         }
 
-        public Task<Member?> GetByMemberAsync(string memberId)
+        public async Task<Member?> GetByMemberAsync(string memberId)
         {
-            throw new NotImplementedException();
+            return await _context.Members.FirstOrDefaultAsync(m => m.MemberId == memberId);
         }
 
-        public Task<IEnumerable<Member>> SearchAsync(string searchTerm)
+        public async Task<IEnumerable<Member>> SearchAsync(string searchTerm)
         {
-            throw new NotImplementedException();
+            return await _context.Members
+                .Where(m => m.Name.Contains(searchTerm,StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
         }
 
-        public Task UpdateAsync(Member member)
+        public async Task UpdateAsync(Member member)
         {
-            throw new NotImplementedException();
+            _context.Members.Update(member);
+            await _context.SaveChangesAsync();
         }
     }
 }

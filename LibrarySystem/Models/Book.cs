@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using LibrarySystem.Interfaces;
 
@@ -8,11 +9,17 @@ namespace LibrarySystem.Models
     public class Book: ISearchable
     {
         public int Id { get; set; }
+        [Required, MinLength(1), MaxLength (100)]
         public string Title { get; set; } = string.Empty;
+        [Required, MinLength(10), MaxLength(13)]
         public string ISBN { get; set; }  = string.Empty;
+        
+        [Required, MinLength(1), MaxLength(100)]
         public string Author { get; set; } = string.Empty;
+        
+        [Range (1500, 2150)]
         public int PublishedYear { get; set; }
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; } = true;
 
         public ICollection<Loan> Loans { get; set; } = new List<Loan>();
         public Book() { }

@@ -10,6 +10,10 @@ namespace LibrarySystem.Data
         public DbSet<Member> Members { get; set; }
         public DbSet<Loan> Loans { get; set; }
 
+        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlite("Data Source=library.db");

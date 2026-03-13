@@ -20,7 +20,7 @@ namespace LibrarySystem.Data
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Loan>> GetActiveLoansAsync(int id)
+        public async Task<IEnumerable<Loan>> GetActiveLoansAsync()
         {
             return await _context.Loans
                 .Include(L => L.Book)

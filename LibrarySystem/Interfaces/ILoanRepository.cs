@@ -10,7 +10,7 @@ namespace LibrarySystem.Interfaces
         Task<IEnumerable<Loan>> GetAllAsync();
         Task<Loan?>GetByIdAsync(int id);
 
-        Task <IEnumerable<Loan>> GetActiveLoansAsync(int id);
+        Task <IEnumerable<Loan>> GetActiveLoansAsync();
 
         Task AddAsync(Loan loan);
         Task UpdateAsync (Loan loan);

@@ -35,29 +35,41 @@ namespace LibrarySystem.Data
             }
         }
 
-        public Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Books.ToListAsync();
         }
 
-        public Task<Book?> GetByIdAsync(int id)
+        public async Task<Book?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Books.FindAsync(id);
         }
 
-        public Task<Book?> GetByISBNAsync(string isbn)
+        public async Task<Book?> GetByISBNAsync(string isbn)
         {
-            throw new NotImplementedException();
+            return await _context.Books.FirstOrDefaultAsync
+                (b => b.ISBN == isbn);
         }
 
-        public Task<IEnumerable<Book>> SearchAsync(string searchTerm)
+        public async Task<IEnumerable<Book>> SearchAsync(string searchTerm)
         {
-            throw new NotImplementedException();
+            return await _context.Books
+                .Where(b => b.Matches(searchTerm))
+                .ToListAsync();
         }
 
-        public Task UpdateAsync(Book book)
+        public async Task UpdateAsync(Book book)
         {
-            throw new NotImplementedException();
+            var existing = await _context.Books.FindAsync(book.Id);
+            if (existing != null)
+            {
+                existing.Title = book.Title;
+                existing.Author = book.Author;
+                existing.ISBN = book.ISBN;
+                existing.PublishedYear = book.PublishedYear;
+                existing.IsAvailable = book.IsAvailable;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
